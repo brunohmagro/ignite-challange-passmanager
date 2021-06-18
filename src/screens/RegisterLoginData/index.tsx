@@ -1,11 +1,12 @@
 import React from "react";
-import { Alert, KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { useForm } from "react-hook-form";
 import { RFValue } from "react-native-responsive-fontsize";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
+
+import { useStorageData } from "../../hooks/login";
 
 import { Input } from "../../components/Form/Input";
 import { Button } from "../../components/Form/Button";
@@ -27,7 +28,7 @@ const schema = Yup.object().shape({
 });
 
 export function RegisterLoginData() {
-  const keyLogins = "@passmanager:logins";
+  const { registerLogin } = useStorageData();
 
   const {
     control,
@@ -42,18 +43,7 @@ export function RegisterLoginData() {
       ...formData,
     };
 
-    try {
-      const oldLogins = await AsyncStorage.getItem(keyLogins);
-
-      const currentLogins = oldLogins ? JSON.parse(oldLogins) : [];
-
-      const newListItems = [...currentLogins, newLoginData];
-
-      await AsyncStorage.setItem(keyLogins, JSON.stringify(newListItems));
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Ops, falhei na hora de salvar");
-    }
+    registerLogin(newLoginData);
 
     reset();
   }

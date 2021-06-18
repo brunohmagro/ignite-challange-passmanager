@@ -1,9 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import AppLoading from "expo-app-loading";
 
 import { SearchBar } from "../../components/SearchBar";
 import { LoginDataItem } from "../../components/LoginDataItem";
+
+import { useStorageData } from "../../hooks/login";
 
 import {
   Container,
@@ -12,44 +14,19 @@ import {
   EmptyListMessage,
 } from "./styles";
 
-interface LoginDataProps {
-  id: string;
-  title: string;
-  email: string;
-  password: string;
-}
-
-type LoginListDataProps = LoginDataProps[];
-
 export function Home() {
-  const keyLogins = "@passmanager:logins";
-  const [searchListData, setSearchListData] = useState<LoginListDataProps>([]);
-  const [data, setData] = useState<LoginListDataProps>([]);
+  const { loadLogins, filterLoginData, searchListData, loginsLoading } =
+    useStorageData();
 
-  async function loadData() {
-    const data = await AsyncStorage.getItem(keyLogins);
-    const dataParse = data ? JSON.parse(data) : [];
-
-    setSearchListData(dataParse);
-    setData(dataParse);
+  function handleFilterLoginData(search: string) {
+    filterLoginData(search);
   }
-  useEffect(() => {
-    loadData();
-  }, []);
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      loadLogins();
     }, [])
   );
-
-  function handleFilterLoginData(search: string) {
-    const result = search
-      ? data.filter((login) => login.title.includes(search))
-      : data;
-
-    setSearchListData(result);
-  }
 
   return (
     <Container>
@@ -58,24 +35,28 @@ export function Home() {
         onChangeText={(value) => handleFilterLoginData(value)}
       />
 
-      <LoginList
-        keyExtractor={(item) => item.id}
-        data={searchListData}
-        ListEmptyComponent={
-          <EmptyListContainer>
-            <EmptyListMessage>Nenhum item a ser mostrado</EmptyListMessage>
-          </EmptyListContainer>
-        }
-        renderItem={({ item: loginData }) => {
-          return (
-            <LoginDataItem
-              title={loginData.title}
-              email={loginData.email}
-              password={loginData.password}
-            />
-          );
-        }}
-      />
+      {!loginsLoading ? (
+        <LoginList
+          keyExtractor={(item) => item.id}
+          data={searchListData}
+          ListEmptyComponent={
+            <EmptyListContainer>
+              <EmptyListMessage>Nenhum item a ser mostrado</EmptyListMessage>
+            </EmptyListContainer>
+          }
+          renderItem={({ item: loginData }) => {
+            return (
+              <LoginDataItem
+                title={loginData.title}
+                email={loginData.email}
+                password={loginData.password}
+              />
+            );
+          }}
+        />
+      ) : (
+        <AppLoading />
+      )}
     </Container>
   );
 }
