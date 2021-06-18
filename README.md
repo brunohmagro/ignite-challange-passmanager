@@ -12,6 +12,10 @@
 
 ---
 
+## About this project
+
+Project carried out as a challenge for the Ignite course, with the objective of setting concepts such as <i>ContextApi</i> and implementation of the <i>theme</i> for the application.
+
 ## Layout
 
 This layout was developed by: [Rocketseat](https://github.com/Rocketseat)
