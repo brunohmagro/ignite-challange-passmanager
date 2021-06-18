@@ -6,7 +6,7 @@
 <div align="center">
 
 <img src="http://img.shields.io/static/v1?label=License&message=MIT&color=green&style=for-the-badge"/>
-<img src="http://img.shields.io/static/v1?label=STATUS&message=CONCLUIDO&color=blue&style=for-the-badge"/>
+<img src="http://img.shields.io/static/v1?label=STATUS&message=Concluded&color=blue&style=for-the-badge"/>
 
 </div>
 
